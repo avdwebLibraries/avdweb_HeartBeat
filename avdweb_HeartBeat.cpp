@@ -6,22 +6,17 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Pub
 You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses.
 
 Version 3-9-2017 moved from Albert library to avdweb_HeartBeat library, 
-Version 8-9-2017 low number overrides high number, changed because of new virtualDelay library
+Version 8-9-2017 low number overrides high number, changed because of new VirtualDelay library
 */
 
 #include <Arduino.h>
 #include "avdweb_HeartBeat.h"
 #include "avdweb_VirtualDelay.h"
+//#include <Streaming.h>
 
-HeartBeat::HeartBeat(byte pin):
-pin(pin)
-{ pinMode(pin, OUTPUT);
-}
-
-void HeartBeat::blinkCount(int _blinkCounts) 
-{ if(blinkCounts==0) blinkCounts = _blinkCounts;
-  else
-  if(_blinkCounts < blinkCounts) blinkCounts = _blinkCounts; // low number overrides high number
+HeartBeat::HeartBeat(byte LEDpin):
+LEDpin(LEDpin)
+{ pinMode(LEDpin, OUTPUT);
 }
 
 void HeartBeat::poll() // 9us
@@ -33,7 +28,7 @@ void HeartBeat::heartBeat()
 { const int UledMax=250, UledMin=-50, stepInterval_ms=25, stepValue=10;
   static int i=stepValue;
   unsigned long now_ms = millis();   
-  digitalWrite(pin, heartBeatPWM.getLevel(max(Uled, 0))); // polled PWM out
+  digitalWrite(LEDpin, heartBeatPWM.getLevel(max(Uled, 0))); // polled PWM out
   if((now_ms - last_ms) < stepInterval_ms) return;
   last_ms = now_ms;
   if(Uled >= UledMax) i = -stepValue;
@@ -47,21 +42,38 @@ void HeartBeat::heartBeat()
  *                          reset       reset
  */
 
-void HeartBeat::blink() // this function is complex!
-{ VirtualDelay blinkOnDelay(millis), blinkOffDelay(millis); // todo: static not allowed
-  static int i; 
-  const int offTime_ms=500, onTime_ms=100;
+void HeartBeat::blinkLED(int _blinkCounts) 
+{ if(blinkCounts==0) blinkCounts = _blinkCounts;
+  else
+  if(_blinkCounts < blinkCounts) blinkCounts = _blinkCounts; // low number overrides high number
+}
 
-  if(blinkOffDelay.done(offTime_ms, 0)) 
-  { if(i == 0) digitalWrite(pin, 0); // skip one flash to create pause
-    else digitalWrite(pin, 1);
-  }
-  if(blinkOnDelay.done(onTime_ms, 1)) 
-  { if(i++ >= blinkCounts) 
-    { i = 0; // return virtually to start
-      blinkCounts = 0; // reset
+void HeartBeat::blink() 
+{ static VirtualDelay blinkOnDelay(millis), blinkOffDelay(millis); 
+  static int i; 
+  const int offTime_ms=400, onTime_ms=100;
+
+  DO_ONCE(blinkOffDelay.start(offTime_ms))
+  
+  if(blinkOffDelay.elapsed())
+  { if(i == 0) 
+    { digitalWrite(LEDpin, 0); // skip one flash to create pause
+      //Serial << "\ni=" << i << " LED 0 " << blinkCounts << " " << millis() << " skip";
     }
-    digitalWrite(pin, 0);
+    else 
+    { digitalWrite(LEDpin, 1);
+      //Serial << "\ni=" << i << " LED 1 " << blinkCounts << " " << millis();
+    }
+    blinkOnDelay.start(onTime_ms);    
+  }
+  if(blinkOnDelay.elapsed()) 
+  { if(i++ >= blinkCounts) 
+    { i = 0; 
+      blinkCounts = 0; // reset, blinkCount is set again in blinkCount() which has to be called in the loop repeatedly 
+    }
+    blinkOffDelay.start(offTime_ms);   
+    digitalWrite(LEDpin, 0);
+    //Serial << "\ni=" << i << " LED 0 " << blinkCounts << " " << millis();
   }
 }
 

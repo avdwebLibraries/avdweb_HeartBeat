@@ -5,9 +5,9 @@
 
 class HeartBeat
 { public:
-    HeartBeat(byte pin);
+    HeartBeat(byte LEDpin);
     void poll(); 
-    void blinkCount(int _blinkCounts); 
+    void blinkLED(int _blinkCounts); 
   
   private:
     void heartBeat();
@@ -18,7 +18,7 @@ class HeartBeat
     unsigned long last_ms;
     int Uled; 
     int blinkCounts;
-    byte pin;
+    byte LEDpin;
 };
 #endif
 
