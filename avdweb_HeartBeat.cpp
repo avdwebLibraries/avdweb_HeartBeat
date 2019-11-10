@@ -5,7 +5,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses.
 
-Note: include "avdweb_VirtualDelay.h" in library folder
+Note: include library avdweb_VirtualDelay in library folder
 
 Version 3-9-2017 moved from Albert library to avdweb_HeartBeat library, 
 Version 8-9-2017 low number overrides high number, changed because of new VirtualDelay library
