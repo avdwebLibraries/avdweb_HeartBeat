@@ -5,6 +5,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses.
 
+Note: include "avdweb_VirtualDelay.h" in library folder
+
 Version 3-9-2017 moved from Albert library to avdweb_HeartBeat library, 
 Version 8-9-2017 low number overrides high number, changed because of new VirtualDelay library
 */
@@ -13,6 +15,12 @@ Version 8-9-2017 low number overrides high number, changed because of new Virtua
 #include "avdweb_HeartBeat.h"
 #include "avdweb_VirtualDelay.h"
 //#include <Streaming.h>
+
+bool SimpleSoftPWM::pwm(byte value) // 0 ... 255, only for LEDs
+{ unsigned long now_us = micros();
+  if((now_us - start_us) >= periodTime_us) start_us = now_us;
+  return((now_us - start_us) < value * 78); // 19890/255=78
+}
 
 HeartBeat::HeartBeat(byte LEDpin):
 LEDpin(LEDpin)
@@ -28,7 +36,7 @@ void HeartBeat::heartBeat()
 { const int UledMax=250, UledMin=-50, stepInterval_ms=25, stepValue=10;
   static int i=stepValue;
   unsigned long now_ms = millis();   
-  digitalWrite(LEDpin, heartBeatPWM.getLevel(max(Uled, 0))); // polled PWM out
+  digitalWrite(LEDpin, heartBeatPWM.pwm(max(Uled, 0))); // polled PWM out
   if((now_ms - last_ms) < stepInterval_ms) return;
   last_ms = now_ms;
   if(Uled >= UledMax) i = -stepValue;
@@ -76,6 +84,3 @@ void HeartBeat::blink()
     //Serial << "\ni=" << i << " LED 0 " << blinkCounts << " " << millis();
   }
 }
-
-
-

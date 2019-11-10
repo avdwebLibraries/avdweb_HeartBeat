@@ -1,7 +1,13 @@
 #ifndef HeartBeat_H
 #define HeartBeat_H
 
-#include "Albert.h"
+class SimpleSoftPWM // only for LEDs and heating
+{ public:
+    bool pwm(byte value); // 0 ... 255
+
+  private:
+    unsigned long start_us, periodTime_us=19890; // minimum frequency to prevent LED flickering = 50Hz
+};
 
 class HeartBeat
 { public:
@@ -21,5 +27,3 @@ class HeartBeat
     byte LEDpin;
 };
 #endif
-
-
