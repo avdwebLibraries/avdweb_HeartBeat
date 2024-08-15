@@ -39,6 +39,8 @@
 #ifndef HeartBeat_H
 #define HeartBeat_H
 
+#include <Arduino.h>
+
 class SimpleSoftPWM // only for LEDs and heating
 {
 public:
