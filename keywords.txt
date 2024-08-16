@@ -1,0 +1,18 @@
+# avdweb_HeartBeat Library
+
+# Primary Header and Classes (KEYWORD1)
+SimpleSoftPWM	KEYWORD1
+HeartBeat	KEYWORD1
+avdweb_HeartBeat.h	KEYWORD1
+
+# Instances, Methods and Functions (KEYWORD2)
+poll	KEYWORD2
+blinkLED	KEYWORD2
+
+# Structures, Pre-Processor and Other Functions (KEYWORD3)
+
+# Constants (LITERAL1)
+
+# Other Parts (LITERAL2)
+
+
